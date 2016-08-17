@@ -9,7 +9,6 @@ var CopyWebpackPlugin = require('copy-webpack-plugin');
 */
 var config = {
   devtool: '#source-map',
-  externals: [nodeExternals()],
   node: {
     __dirname: false,
     __filename: false
@@ -51,7 +50,8 @@ const serverConfig = extend(true, {}, config, {
     path: path.join(__dirname, 'build'),
     publicPath: path.join(__dirname, 'build'),
     filename: 'server.bundle.js'
-  }
+  },
+  externals: [nodeExternals()]
 });
 
 /*

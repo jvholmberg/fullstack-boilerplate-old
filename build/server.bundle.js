@@ -132,8 +132,8 @@
 	
 	var router = new _express.Router();
 	
-	router.get('/', function (req, res) {
-	  res.render('home');
+	router.get('*', function (req, res) {
+	  res.render('index');
 	});
 	
 	// Setup API-routes

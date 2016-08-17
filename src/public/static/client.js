@@ -1,5 +1,20 @@
 'use strict';
 
-import path from 'path';
+import React from 'react';
+import ReactDOM from 'react-dom';
+import { Router, Route, IndexRoute, browserHistory } from 'react-router';
 
-console.log('This is client.js');
+const app = document.getElementById('app');
+
+import Layout from './pages/Layout';
+import Dashboard from './pages/Dashboard';
+import Home from './pages/Home';
+
+ReactDOM.render(
+  <Router history={browserHistory}>
+    <Route path='/' component={Layout}>
+      <IndexRoute component={Home}></IndexRoute>
+      <Route path="dashboard" component={Dashboard}></Route>
+    </Route>
+  </Router>
+, app);

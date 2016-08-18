@@ -3,6 +3,7 @@ var path = require('path');
 var extend = require('extend');
 var nodeExternals = require('webpack-node-externals');
 var CopyWebpackPlugin = require('copy-webpack-plugin');
+var hotMiddlewareScript = 'webpack-hot-middleware/client?path=/__webpack_hmr&timeout=20000&reload=true';
 
 /*
 * Setup general config for webpack
@@ -34,7 +35,10 @@ var config = {
         },
         to: path.join(__dirname, 'build', 'public', 'content')
       }
-    ])
+    ]),
+    new webpack.optimize.OccurenceOrderPlugin(),
+    new webpack.HotModuleReplacementPlugin(),
+    new webpack.NoErrorsPlugin()
   ]
 };
 /*
@@ -44,7 +48,8 @@ const serverConfig = extend(true, {}, config, {
   target: 'node',
   context: path.join(__dirname, 'src'),
   entry: [
-    './server.js'
+    './server.js',
+    hotMiddlewareScript
   ],
   output: {
     path: path.join(__dirname, 'build'),
@@ -61,7 +66,8 @@ const clientConfig = extend(true, {}, config, {
   target: 'web',
   context: path.join(__dirname, 'src', 'public', 'static'),
   entry: [
-    './client.js'
+    './client.js',
+    hotMiddlewareScript
   ],
   output: {
     path: path.join(__dirname, 'build', 'public', 'static'),

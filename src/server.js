@@ -3,52 +3,85 @@
 // Loading global node_modules
 import express from 'express';
 import bodyParser from 'body-parser';
+import cookieParser from 'cookie-parser';
+import session from 'express-session';
+import expressValidator from 'express-validator';
+import flash from 'connect-flash';
 import path from 'path';
 import compression from 'compression';
 
-// Import middleware for hot-reloading
-import webpack from 'webpack';
-import webpackDevMiddleware from 'webpack-dev-middleware';
-import webpackHotMiddleware from 'webpack-hot-middleware';
-import webpackConfig from '../webpack.config';
+import passport from 'passport';
 
+// Paths for views/static content
 const STATIC_DIR = path.join(__dirname, 'public', 'static');
 const VIEWS_DIR = path.join(__dirname, 'public', 'content');
 
-// Setup express
-let app = express();
+var app = express();
+const NODE_ENV = process.env.NODE_ENV ? process.env.NODE_ENV : app.settings.env;
+
 app.set('view engine', 'ejs');
 app.set('views', VIEWS_DIR);
-app.use('/static', express.static(STATIC_DIR));
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(compression());
 
 // Setup hot-reloading for app
-// webpackConfig[0] = Server
-// webpackConfig[1] = Client
-let compilerServer = webpack(webpackConfig[0]);
-let compilerClient = webpack(webpackConfig[1]);
-app.use(webpackDevMiddleware(compilerServer, {
-  noInfo: true,
-  publicPath: webpackConfig[0].output.publicPath
+// if(NODE_ENV === 'development') {
+//   (() => {
+//     var webpack = require('webpack');
+//     var webpackConfig = require('../webpack.config');
+//     var webpackDevMiddleware = require('webpack-dev-middleware');
+//     var webpackHotMiddleware = require('webpack-hot-middleware');
+//     var compiler = webpack(webpackConfig[1]);
+//     app.use(webpackDevMiddleware(compiler, {
+//       noInfo: true,
+//       publicPath: webpackConfig[1].output.publicPath
+//     }));
+//     app.use(webpackHotMiddleware)(compiler, {
+//       log: console.log,
+//       path: '/__webpack_hmr',
+//       heartbeat: 10 * 1000
+//     });
+//   })();
+// }
+
+// Setup express
+app.use('/static', express.static(STATIC_DIR));
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(cookieParser());
+app.use(session({
+    secret: 'secret',
+    saveUninitialized: true,
+    resave: true
 }));
-app.use(webpackHotMiddleware(compilerServer, {
-  log: console.log,
-  path: '/__webpack_hmr',
-  heartbeat: 10 * 1000
+app.use(passport.initialize());
+app.use(passport.session());
+app.use(expressValidator({
+  errorFormatter: function(param, msg, value) {
+      var namespace = param.split('.')
+      , root    = namespace.shift()
+      , formParam = root;
+
+    while(namespace.length) {
+      formParam += '[' + namespace.shift() + ']';
+    }
+    return {
+      param : formParam,
+      msg   : msg,
+      value : value
+    };
+  }
 }));
-app.use(webpackDevMiddleware(compilerClient, {
-  noInfo: true,
-  publicPath: webpackConfig[1].output.publicPath
-}));
-app.use(webpackHotMiddleware(compilerClient, {
-  log: console.log,
-  path: '/__webpack_hmr',
-  heartbeat: 10 * 1000
-}));
+app.use(flash());
+app.use(function (req, res, next) {
+  res.locals.success_msg = req.flash('success_msg');
+  res.locals.error_msg = req.flash('error_msg');
+  res.locals.error = req.flash('error'); // This row exist due to passport setting error-messages to this var
+  res.locals.user = req.user || null;
+  next();
+});
+app.use(compression());
 
 // Setup routes
-app.use(require('./routes.js'));
+//app.use(require('./routes.js'));
+require('./routes.js').default(app);
 
 // Error-handling
 //app.use(require('./error.js'));

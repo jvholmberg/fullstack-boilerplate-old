@@ -1,0 +1,13 @@
+
+DONE #1 Setup webpack to use ES6 for server and client.
+DONE #2 Setup a basic web-server using express.
+DONE #3 Setup a basic react-application .
+#4 Add local authentication to application.
+#5 Setup API.
+#6 Add hot-reloading to application using webpack-middleware.
+#7 Create basic layout as a staring-point to go from.
+#8 Add server-side rendering
+#9 Add unit-tests using mocha + chai
+#10 prepare application for deployment to Heroku
+DONE #11 Add SASS-support for project
+#12 Add error-handling acompanied by useful error-messages

@@ -1,13 +1,23 @@
 'use strict';
 
 import {Router} from 'express';
+import {MongoClient} from 'mongodb';
+import assert from 'assert';
+import mongoUtil from './mongoUtil';
 
-var router = new Router();
+export default (app) => {
 
-router.get('*', (req, res) => {
-  res.render('index');
-});
+  // Setup app-routes
+  let router = new Router();
+  router.get('*', (req, res) => {
+    res.render('index');
+  });
+  app.use(router);
 
-// Setup API-routes
+  // Setup API-routes
+  mongoUtil.connectToServer((err) => {
+		assert.equal(null, err);
 
-module.exports = router;
+		app.use('/auth', require('./api/users'));
+	});
+}

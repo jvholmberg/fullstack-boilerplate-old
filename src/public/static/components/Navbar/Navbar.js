@@ -3,6 +3,8 @@
 import React from 'react';
 import { Link } from 'react-router';
 
+import s from './Navbar.sass';
+
 export default class Navbar extends React.Component {
 
   constructor() {
@@ -10,9 +12,18 @@ export default class Navbar extends React.Component {
   }
   render() {
     return (
-      <nav>
-        <Link to=''>Home</Link>
-        <Link to='dashboard'>Dashboard</Link>
+      <nav className={s.root}>
+        <ul>
+          <li>
+            <Link to=''>Home</Link>
+          </li>
+          <li>
+            <Link to='auth'>Auth</Link>
+          </li>
+          <li>
+            <Link to='dashboard'>Dashboard</Link>
+          </li>
+        </ul>
       </nav>
     );
   }

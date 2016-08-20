@@ -3,23 +3,21 @@ var path = require('path');
 var extend = require('extend');
 var nodeExternals = require('webpack-node-externals');
 var CopyWebpackPlugin = require('copy-webpack-plugin');
-var hotMiddlewareScript = 'webpack-hot-middleware/client?path=/__webpack_hmr&timeout=20000&reload=true';
+// var hotMiddlewareScript = 'webpack-hot-middleware/client?path=/__what&timeout=2000&overlay=false';
 
 /*
 * Setup general config for webpack
 */
 var config = {
   devtool: '#source-map',
-  node: {
-    __dirname: false,
-    __filename: false
-  },
   module: {
     loaders: [
       { test: /\.(js|jsx)?$/,
         exclude: /(node_modules|bower_components)/,
         loader: 'babel-loader',
         query: { presets: ['es2015', 'react'] }},
+        { test: /\.(sass|scss)$/,
+          loaders: ['style-loader', 'css-loader', 'sass-loader'] },
       { test: /\.json$/,
         loader: 'json-loader' }
     ]
@@ -35,10 +33,10 @@ var config = {
         },
         to: path.join(__dirname, 'build', 'public', 'content')
       }
-    ]),
-    new webpack.optimize.OccurenceOrderPlugin(),
-    new webpack.HotModuleReplacementPlugin(),
-    new webpack.NoErrorsPlugin()
+    ])
+    // new webpack.optimize.OccurenceOrderPlugin(),
+    // new webpack.HotModuleReplacementPlugin(),
+    // new webpack.NoErrorsPlugin()
   ]
 };
 /*
@@ -48,13 +46,16 @@ const serverConfig = extend(true, {}, config, {
   target: 'node',
   context: path.join(__dirname, 'src'),
   entry: [
-    './server.js',
-    hotMiddlewareScript
+    './server.js'
   ],
   output: {
     path: path.join(__dirname, 'build'),
     publicPath: path.join(__dirname, 'build'),
     filename: 'server.bundle.js'
+  },
+  node: {
+    __dirname: false,
+    __filename: false
   },
   externals: [nodeExternals()]
 });
@@ -66,8 +67,7 @@ const clientConfig = extend(true, {}, config, {
   target: 'web',
   context: path.join(__dirname, 'src', 'public', 'static'),
   entry: [
-    './client.js',
-    hotMiddlewareScript
+    './client.js'
   ],
   output: {
     path: path.join(__dirname, 'build', 'public', 'static'),

@@ -5,9 +5,9 @@ import bcrypt from 'bcryptjs';
 import mongoUtil from '../../mongoUtil';
 const db = mongoUtil.getDb().collection('users');
 
-export function register(userObj, next) {
+export function createUser(userObj, next) {
   bcrypt.genSalt(10, function(err, salt) {
-      bcrypt.hash(userObj.password, salt, function(err, hash) {
+      bcrypt.hash(userObj.password, salt, (err, hash) => {
           userObj.password = hash;
           db.insertOne(userObj, (err, result) => {
             assert.equal(err, null);
@@ -17,8 +17,29 @@ export function register(userObj, next) {
   });
 }
 
-export function login(id, next) {
-  next({
-    fn: 'getNews'
+export function getUserByUsername(username, next){
+  db.findOne({
+    username: username
+  }, (err, doc) => {
+    assert.equal(err, null);
+    next(err, doc);
   });
+}
+
+export function getUserById(userId, next){
+  db.findOne({
+    _id: userId
+  }, (err, doc) => {
+    assert.equal(err, null);
+    next(err, doc);
+  });
+}
+
+export function comparePassword(candidatePassword, hash, next){
+	bcrypt.compare(candidatePassword, hash,
+    (err, isMatch) => {
+    	assert.equal(err, null);
+    	next(err, isMatch);
+	   }
+   );
 }

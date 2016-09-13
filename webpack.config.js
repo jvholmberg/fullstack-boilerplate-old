@@ -16,8 +16,8 @@ var config = {
         exclude: /(node_modules|bower_components)/,
         loader: 'babel-loader',
         query: { presets: ['es2015', 'react'] }},
-        { test: /\.(sass|scss)$/,
-          loaders: ['style-loader', 'css-loader', 'sass-loader'] },
+      { test: /\.(sass|scss)$/,
+        loaders: ['style-loader', 'css-loader', 'sass-loader'] },
       { test: /\.json$/,
         loader: 'json-loader' }
     ]
@@ -28,10 +28,10 @@ var config = {
     */
     new CopyWebpackPlugin([
       { from: {
-          glob: path.resolve(__dirname, 'src', 'public', 'content'),
+          glob: path.resolve(__dirname, 'src', 'ejs'),
           dot: true
         },
-        to: path.join(__dirname, 'build', 'public', 'content')
+        to: path.join(__dirname, 'build', 'ejs')
       }
     ])
     // new webpack.optimize.OccurenceOrderPlugin(),
@@ -50,7 +50,7 @@ const serverConfig = extend(true, {}, config, {
   ],
   output: {
     path: path.join(__dirname, 'build'),
-    publicPath: path.join(__dirname, 'build'),
+    publicPath: '/',
     filename: 'server.bundle.js'
   },
   node: {
@@ -65,13 +65,13 @@ const serverConfig = extend(true, {}, config, {
 */
 const clientConfig = extend(true, {}, config, {
   target: 'web',
-  context: path.join(__dirname, 'src', 'public', 'static'),
+  context: path.join(__dirname, 'src', 'public'),
   entry: [
     './client.js'
   ],
   output: {
-    path: path.join(__dirname, 'build', 'public', 'static'),
-    publicPath: path.join(__dirname, 'build'),
+    path: path.join(__dirname, 'build', 'public'),
+    publicPath: '/',
     filename: 'client.bundle.js'
   }
 });

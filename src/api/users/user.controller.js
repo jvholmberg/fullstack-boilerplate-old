@@ -8,15 +8,10 @@
 
 'use strict';
 
-// import passport from 'passport';
-// import {Strategy} from 'passport-local';
-
 import * as userDAO from './user.model';
-
-function handleError() {
-
-}
-
+import assert from 'assert';
+import passport from 'passport';
+let LocalStrategy = require('passport-local').Strategy;
 
 /**
 * Register user
@@ -43,22 +38,69 @@ export function register(req, res, next) {
   if (errors) {
     console.log(errors);
   } else {
-    return userDAO.register(userObj, (result) => {
-      return res.status(200).json(result);
-    });
+    return userDAO.createUser(userObj,
+      (result) => {
+        return res.status(200).json(result);
+      }
+    );
   }
-
-
-
 }
 
+// Setup passport
+passport.use(new LocalStrategy(
+  (username, password, done) => {
+    userDAO.getUserByUsername(username,
+      (err, user) => {
+        console.log(err);
+        assert.equal(err, null);
+        if (!user) {
+          return done(null, false, { message: 'Unkown user' });
+        }
+        userDAO.comparePassword(password, user.password,
+          (err, isMatch) => {
+            assert.equal(err, null);
+            console.log('new local strategy');
+            if(isMatch){
+         			return done(null, user);
+         		} else {
+         			return done(null, false, {message: 'Invalid password'});
+         		}
+          }
+        );
+      }
+    );
+  })
+);
+passport.serializeUser(
+  (user, done) => {
+    console.log('serialize');
+    done(null, user._id);
+  }
+);
+passport.deserializeUser(
+  (id, done) => {
+    userDAO.getUserById(id,
+      (err, user) => {
+        console.log('deserialize');
+        done(err, user);
+      }
+    );
+  }
+);
 /**
-* Register user
+* Login user
 * restriction: 'none'
 */
-export function login(req, res, next) {
-  var newsObj = req.body.newsObj;
-  return newsDAO.createArticle((newsObj) => {
-    return res.status(200).json(data);
-  });
+export function login(req, res) {
+  passport.authenticate('local',
+  { successRedirect: '/dashboard',
+    failureRedirect: '/auth' },
+  (err, user, info) => {
+    assert.equal(err, null);
+    if (user) {
+      return res.redirect('/dashboard');
+    } else {
+      return res.redirect('/auth');
+    }
+  })(req, res);
 }

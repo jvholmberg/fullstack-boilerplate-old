@@ -39,6 +39,7 @@ app.set('views', VIEWS_DIR);
 
 // Setup express
 app.use(express.static(STATIC_DIR));
+app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 

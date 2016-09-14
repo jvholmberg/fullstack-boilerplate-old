@@ -2,7 +2,7 @@
 
 import React from 'react';
 
-require('./SignIn.sass');
+// require('./SignIn.sass');
 
 let s = {
   root: 'signin_root',

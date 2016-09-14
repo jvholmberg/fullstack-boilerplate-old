@@ -11,7 +11,8 @@ export default (app) => {
     res.render('index');
   });
 
-  app.use('/api/user', (req, res) => {
+  app.use('/api/user/register?', (req, res) => {
+    console.log(req.body);
     res.send({foo: 'bar'});
   });
 

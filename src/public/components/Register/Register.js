@@ -4,7 +4,7 @@ import React from 'react';
 import xhr from '../../restHelper';
 import constants from '../../constants';
 
-require('./Register.sass');
+// require('./Register.sass');
 
 let s = {
   root: 'register_root',
@@ -28,7 +28,8 @@ export default class Register extends React.Component {
     };
   }
   _formSubmit(e) {
-    var foo = xhr(constants.api + '/user/register').post(this.state)
+    let formData = JSON.stringify(this.state);
+    xhr('/api/user/register').post(formData)
       .then((data) => {
         console.log(data);
       })

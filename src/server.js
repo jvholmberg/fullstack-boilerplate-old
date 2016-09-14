@@ -3,7 +3,7 @@
 import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
 import express from 'express';
-
+import expressValidator from 'express-validator';
 import path from 'path';
 import compression from 'compression';
 
@@ -42,6 +42,22 @@ app.use(express.static(STATIC_DIR));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
+app.use(expressValidator({
+  errorFormatter: function(param, msg, value) {
+    let namespace = param.split('.')
+      , root    = namespace.shift()
+      , formParam = root;
+
+    while(namespace.length) {
+      formParam += '[' + namespace.shift() + ']';
+    }
+    return {
+      param : formParam,
+      msg   : msg,
+      value : value
+    };
+  }
+}));
 
 // Setup routes
 require('./routes.js').default(app);

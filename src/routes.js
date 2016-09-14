@@ -3,6 +3,8 @@
 import {Router} from 'express';
 import assert from 'assert';
 
+import mongoUtil from './mongoUtil';
+
 export default (app) => {
 
   // Setup app-routes
@@ -11,10 +13,13 @@ export default (app) => {
     res.render('index');
   });
 
-  app.use('/api/user/register?', (req, res) => {
-    console.log(req.body);
-    res.send({foo: 'bar'});
+  // Setup API-routes
+  mongoUtil.connectToServer((err) => {
+    assert.equal(null, err);
+
+    app.use('/api/user/', require('./api/users'));
   });
+
 
   app.use(router);
 }

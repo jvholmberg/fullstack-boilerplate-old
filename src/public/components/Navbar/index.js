@@ -3,8 +3,6 @@
 import React from 'react';
 import { Link, IndexLink } from 'react-router';
 
-// require('./Navbar.sass');
-
 let s = {
   root: 'navbar_root',
   list: 'navbar_list',

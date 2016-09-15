@@ -7,8 +7,8 @@ import { Router, Route, IndexRoute, browserHistory } from 'react-router';
 const app = document.getElementById('app');
 
 import App from './App';
-import SignIn from './components/SignIn/SignIn';
-import Register from './components/Register/Register';
+import SignIn from './components/SignIn/';
+import Register from './components/Register/';
 
 ReactDOM.render(
   <Router history={browserHistory}>

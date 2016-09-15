@@ -19,24 +19,45 @@ let LocalStrategy = require('passport-local').Strategy;
 */
 export function register(req, res, next) {
 
-  // Validate body
-  req.checkBody('username', 'Username is required').notEmpty();
-  req.checkBody('email', 'Email is required').notEmpty();
-  req.checkBody('email', 'Email is invalid').isEmail();
-  req.checkBody('password', 'Password is required').notEmpty();
-  req.checkBody('password2', 'Passwords do not match').equals(req.body.password);
+  let usernameField = 'username'
+    , emailField = 'email'
+    , passwordField = 'password'
+    , password2Field = 'password2'
+    , param;
+
+  console.log(req.body);
+
+  // Validate body (THIS DOES NOT WORK!!!!!)
+  req.checkBody(usernameField, 'Username is required').notEmpty();
+  req.checkBody(emailField, 'Email is required').notEmpty();
+  req.checkBody(emailField, 'Email is invalid').isEmail();
+  req.checkBody(passwordField, 'Password is required').notEmpty();
+  req.checkBody(password2Field, 'Passwords do not match').equals(req.body.password);
 
   let userObj = {
     username: req.body.username,
     email: req.body.email,
     password: req.body.password
   };
+  let responseObj = {
+    success: !req.validationErrors(),
+    errors: [],
+    data: null
+  };
 
   // If errors were found return error-messages to user
   // Else query db
-  let errors = req.validationErrors();
-  if (errors) {
-    console.log(errors);
+  if (req.validationErrors()) {
+    for(let i = 0; i < req.validationErrors().length; i++) {
+      param = req.validationErrors()[i].param;
+      responseObj.errors[i] = {
+        type: 'danger',
+        icon: (param === usernameField ? 'user_icon' : (param === emailField ? 'email_icon' : 'lock_icon')),
+        param: param,
+        msg: req.validationErrors()[i].msg
+      };
+    }
+    return res.status(200).json(responseObj);
   } else {
     return userDAO.createUser(userObj,
       (result) => {

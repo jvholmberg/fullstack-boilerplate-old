@@ -2,8 +2,6 @@
 
 import React from 'react';
 
-// require('./SignIn.sass');
-
 let s = {
   root: 'signin_root',
   label: 'signin_label',

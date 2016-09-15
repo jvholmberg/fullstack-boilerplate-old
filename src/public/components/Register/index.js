@@ -4,7 +4,7 @@ import React from 'react';
 import xhr from '../../restHelper';
 import constants from '../../constants';
 
-// require('./Register.sass');
+import AlertHandler from '../AlertHandler/';
 
 let s = {
   root: 'register_root',
@@ -20,25 +20,31 @@ export default class Register extends React.Component {
 
     this._onChange = this._onChange.bind(this);
     this._formSubmit = this._formSubmit.bind(this);
+    this._handleResponse = this._handleResponse.bind(this);
 
     this.state = {
       username: props.username || '',
       password: props.password || '',
-      password2: props.password2 || ''
+      password2: props.password2 || '',
+      errors: props.errors || []
     };
+  }
+  _onChange(e) {
+    this.setState({[e.target.name]: e.target.value});
   }
   _formSubmit(e) {
     let formData = JSON.stringify(this.state);
-    xhr('/api/user/register').post(formData)
-      .then((data) => {
-        console.log(data);
-      })
+    let headers = {
+      'Content-Type': 'application/json; charset=utf-8'
+    };
+    xhr('/api/user/register').post(formData, headers)
+      .then(this._handleResponse)
       .catch((err) => {
         console.log(err);
       });
   }
-  _onChange(e) {
-    this.setState({[e.target.name]: e.target.value});
+  _handleResponse(data) {
+    this.setState({errors: data.errors});
   }
   render() {
     return (
@@ -57,6 +63,7 @@ export default class Register extends React.Component {
         </label>
         <button className={s.button}
           onClick={this._formSubmit}>Sign In</button>
+        <AlertHandler data={this.state.errors} />
       </div>
     );
   }
